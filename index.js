@@ -9,17 +9,9 @@ import {
     View,
     Text,
     TouchableOpacity,
-    Keyboard,
-    Platform,
 } from 'react-native';
 
-type State = {
-    keyboardUp: boolean,
-}
-
 class Tabs extends Component {
-    state: State = {};
-
     onSelect(el){
         if (el.props.onSelect) {
             el.props.onSelect(el);
@@ -27,26 +19,6 @@ class Tabs extends Component {
             this.props.onSelect(el);
         }
     }
-
-    componentWillMount(){
-        if (Platform.OS==='android') {
-            this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.keyboardWillShow);
-            this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.keyboardWillHide);
-        }
-    }
-
-    componentWillUnmount(){
-        this.keyboardDidShowListener.remove();
-        this.keyboardDidHideListener.remove();
-    }
-
-    keyboardWillShow = (e) => {
-        this.setState({ keyboardUp: true });
-    };
-
-    keyboardWillHide = (e) => {
-        this.setState({ keyboardUp: false });
-    };
 
     render(){
         const self = this;
@@ -59,10 +31,9 @@ class Tabs extends Component {
             });
         }
         return (
-            <View style={[styles.tabbarView, this.props.style, this.state.keyboardUp && styles.hidden]}>
+            <View style={[styles.tabbarView, this.props.style]}>
                 {React.Children.map(this.props.children.filter(c=>c),(el)=>
                     <TouchableOpacity key={el.props.name+"touch"}
-                       testID={el.props.testID}
                        style={[styles.iconView, this.props.iconStyle, (el.props.name || el.key) == selected ? this.props.selectedIconStyle || el.props.selectedIconStyle || {} : {} ]}
                        onPress={()=>!self.props.locked && self.onSelect(el)}
                        onLongPress={()=>self.onSelect(el)}
@@ -80,7 +51,7 @@ var styles = StyleSheet.create({
         bottom:0,
         right:0,
         left:0,
-        height:50,
+        height:80,
         opacity:1,
         backgroundColor:'transparent',
         flexDirection: 'row',
@@ -89,13 +60,10 @@ var styles = StyleSheet.create({
     },
     iconView: {
         flex: 1,
-        height: 50,
+        height: 80,
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    hidden: {
-        height: 0,
-    },
+    }
 });
 
 module.exports = Tabs;
